@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Calculator</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<style type="text/css">
+body {
+	background: gray
+}
+select {
+	width: 130px
+}
+form {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    outline-color: green;
+}
+</style>
+</head>
+
+<body>
+<body>
+	  
+      <form name="calculator">
+      	<p>附加模式计算器</p>
+      
+         <table>
+         	<tr>
+         		<td><input type="radio" name="branch" id="wulin">杭州武林分行</td>
+         		<td><input type="radio" name="branch">绍兴袍江分行</td>
+         		<td><input type="radio" name="branch">其他银行费率</td>
+         	</tr>
+         	<tr>
+         		<td><p>贷款本金(万元)</p></td>
+         		<td><p>贷款期限</p></td>
+         		<td><p>公司费率(%)</p></td>
+         	</tr>
+         	<tr>
+         		<td><input name="loan-principal" id="loan-principal" /></td>
+         		<td>
+         			<select id="loan-duration">
+         				<option value="12" selected>12</option>
+         				<option value="24">24</option>
+         				<option value="36">36</option>
+         			</select>
+         		</td>
+         		<td><input name="company-rate" id="company-rate" /></td>
+         	</tr>
+         	<tr>
+         		<td><p>贷款金额</p></td>
+         		<td><p>上浮金额</p></td>
+         		<td><p>银行费率(%)</p></td>
+         	</tr>
+            <tr>
+         		<td><input name="loan-money" id="loan-money" disabled="" /></td>
+         		<td><input name="rising-money" id="rising-money" disabled="" /></td>
+         		<td><input name="bank-rate" id="bank-rate" value="3.5" disabled=""></td>
+         	</tr>
+         	<tr>
+         		<td><p>分期还款总额</p></td>
+         		<td><p>手续费金额</p></td>
+         		<td><p>月还款额</p></td>
+         	</tr>
+         	<tr>
+         		<td><input name="installment-refund-money" id="installment-refund-money" disabled="" /></td>
+         		<td><input name="service-charge-money" id="service-charge-money" disabled="" /></td>
+         		<td><input name="monthly-refund-money" id="monthly-refund-money" disabled="" /></td>
+         	</tr>
+         </table>
+      </form>
+   </body>
+</body>
+
+<script type="text/javascript">
+	$(function() {
+		var loanPrincipal = $("#loan-principal"); //贷款本金
+		var bankRate = $("#bank-rate"); //银行费率
+		var companyRate = $("#company-rate"); //公司费率
+		var risingMoney = $("#rising-money"); // 上浮金额
+		var loanMoney = $("#loan-money"); //贷款金额
+		var installmentRefundMoney = $("#installment-refund-money"); //分期还款总额
+		var serviceChargeMoney = $("#service-charge-money"); //手续费金额
+		var monthlyRefundMoney = $("#monthly-refund-money"); //月还款额
+		var loanDuration = $("#loan-duration"); //贷款期限
+
+		$('select').on('change', function(e) {
+			var optionSelected = $("option:selected", this);
+			var value = this.value;
+			if (value === "12") {
+				$("#bank-rate").val("3.5").trigger('change');
+			}else if (value === "24") {
+				$("#bank-rate").val("6.5").trigger('change');
+			}else if (value === "36") {
+				$("#bank-rate").val("9.5").trigger('change');
+			}
+		});
+
+		$('#loan-principal, #company-rate, #bank-rate').on('keyup change', function(e) {
+			if (loanPrincipal.val() !== "" && companyRate.val() !== "") {
+				risingMoney.val(formatValue(loanPrincipal)*10000*(formatValue(companyRate) - formatValue(bankRate))/100); //计算上浮金额
+			}
+			if (loanPrincipal.val() !== "" && risingMoney.val() !== "") {
+				loanMoney.val(formatValue(loanPrincipal)*10000 + formatValue(risingMoney)); //计算贷款金额
+			}
+			if (loanMoney.val() !== "") {
+				installmentRefundMoney.val(formatValue(loanMoney) * (1 + formatValue(bankRate)/100)); // 计算分期还款总额
+				serviceChargeMoney.val(formatValue(loanMoney) * formatValue(bankRate)/100); // 计算手续费金额
+			}
+			if (installmentRefundMoney.val() !== "") {
+				monthlyRefundMoney.val(formatValue(installmentRefundMoney) / formatValue(loanDuration)); //计算月还款额
+			}
+
+		});
+
+		function formatValue(target) {
+			return parseFloat(target.val());
+		}
+
+
+	});
+</script>
+</html>
